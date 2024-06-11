@@ -41,11 +41,9 @@ const Verification = ({ navigation, route }) => {
         email: userdata[0]?.email,
         password: userdata[0]?.password,
         name: userdata[0]?.name,
-        address: userdata[0]?.address,
-        dob: userdata[0]?.dob,
       };
 
-      fetch("http://10.50.0.142:3000/signup", {
+      fetch("http://192.168.4.153:3000/signup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
