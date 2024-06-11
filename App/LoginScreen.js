@@ -58,21 +58,20 @@ export default function LoginScreen() {
             <Image source={athena} style={styles.image}></Image>
           </View>
           <View>
-            <Text style={styles.emailtext}>Email*</Text>
+            <Text style={styles.emailtext}>Email</Text>
             <TextInput
               style={styles.input}
               onChangeText={(text)=>setFdata({...fdata,email:text})}
               placeholder="Enter Email"
-              // value={email}
               keyboardType="email-address"
               autoCapitalize="none"
             />
-            {/* {errormsg ? (
+            {errormsg ? (
               <Text style={styles.errorText}>{errormsg}</Text>
-            ) : null} */}
+            ) : null}
           </View>
           <View>
-            <Text style={styles.emailtext}>Password*</Text>
+            <Text style={styles.emailtext}>Password</Text>
             <TextInput
               style={styles.input}
               onChangeText={(text)=>setFdata({...fdata,password: text})}
@@ -80,13 +79,13 @@ export default function LoginScreen() {
               // value={password}/
               secureTextEntry
             />
-            {/* {errormsg ? (
+            {errormsg ? (
               <Text style={styles.errorText}>{errormsg}</Text>
-            ) : null} */}
+            ) : null}
           </View>
           <View style={styles.forgot}>
             <TouchableOpacity>
-              <Text style={styles.forgottext}>Forgot Password?</Text>
+              <Text style={styles.forgottext} onPress={()=>navigation.navigate("Signup")}>Forgot Password?</Text>
             </TouchableOpacity>
           </View>
           <View style={styles.signin}>
@@ -98,7 +97,7 @@ export default function LoginScreen() {
           </View>
           <View style={styles.logingem}>
             <Button
-              title="Login with Gemini Id"
+              title="Signup with Gemini Id"
               color="#3e885b"
               onPress={() => navigation.navigate("Signup")}
             ></Button>
@@ -115,8 +114,8 @@ const styles = StyleSheet.create({
   },
   inner: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    alignItems:'center',
+    padding: 24,
   },
   image: {
     width: 250,
@@ -137,7 +136,7 @@ const styles = StyleSheet.create({
     borderColor: "red",
   },
   emailtext: {
-    color: "#808080",
+    color: "#000",
     alignItems: "flex-start",
     marginTop: 13,
   },

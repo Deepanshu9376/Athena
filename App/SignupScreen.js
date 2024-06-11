@@ -135,7 +135,7 @@ const styles = StyleSheet.create({
   },
   inner: {
     flex: 1,
-    padding: 24,
+    padding: 24
   },
   header: {
     fontSize: 24,
@@ -156,6 +156,7 @@ const styles = StyleSheet.create({
   },
   submit: {
     marginTop: 40,
+    paddingTop: 40,
   },
   already: {
     marginTop: 40,
