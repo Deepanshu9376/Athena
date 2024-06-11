@@ -35,7 +35,7 @@ export default function SignupScreen({ navigation }) {
 
     try {
       console.log(fdata);
-      const response = await axios.post('http://192.168.4.153:3000/signup', fdata);
+      const response = await axios.post('http://10.50.0.142:3000/signup', fdata);
       
       if (response.data.error) {
         setError(response.data.error);
