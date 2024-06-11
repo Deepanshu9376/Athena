@@ -5,6 +5,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import LoginScreen from './App/LoginScreen';
 import SignupScreen from './App/SignupScreen';
 import SuccessScreen from './App/SuccessScreen';
+import Verification from './App/Verification';
 
 const Stack = createStackNavigator();
 
@@ -15,6 +16,7 @@ export default function App() {
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="Signup" component={SignupScreen} />
         <Stack.Screen name="Success" component={SuccessScreen} />
+        <Stack.Screen name="Verification" component={Verification} />
       </Stack.Navigator>
     </NavigationContainer>
   );

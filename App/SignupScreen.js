@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -10,47 +10,64 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   ScrollView,
-} from 'react-native';
-import axios from 'react-native-axios';
+} from "react-native";
+import axios from "react-native-axios";
 
 export default function SignupScreen({ navigation }) {
   const [fdata, setFdata] = useState({
-    name: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
   });
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   const handleSignup = async () => {
-    if (!fdata.name || !fdata.email || !fdata.password || !fdata.confirmPassword) {
-      setError('All fields are required');
+    if (
+      !fdata.name ||
+      !fdata.email ||
+      !fdata.password ||
+      !fdata.confirmPassword
+    ) {
+      setError("All fields are required");
       return;
     }
 
     if (fdata.password !== fdata.confirmPassword) {
-      setError('Passwords do not match');
+      setError("Passwords do not match");
       return;
     }
 
     try {
       console.log(fdata);
-      const response = await axios.post('http://10.50.0.142:3000/signup', fdata);
-      
-      if (response.data.error) {
-        setError(response.data.error);
-      } else {
-        alert('Account created successfully');
-        navigation.navigate('Success');
-      }
+      // const response = await axios.post('http://10.50.0.142:3000/verify', fdata);
+      fetch("http://10.50.0.142:3000/verify", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(fdata),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          // console.log(data);
+          if (data.error === "Invalid Credentials") {
+            alert('Invalid Credentials')
+            setError("Invalid Credentials");
+          } else if (data.message === "Verification Code Sent to your Email") {
+            console.log(data.udata);
+            alert(data.message);
+            navigation.navigate("Verification", { userdata: data.udata });
+          }
+        });
     } catch (error) {
-      setError('Error connecting to the server');
+      setError("Error connecting to the server");
     }
   };
 
   return (
     <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={styles.container}
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -85,14 +102,21 @@ export default function SignupScreen({ navigation }) {
             style={styles.input}
             placeholder="Confirm Password"
             onPressIn={() => setError(null)}
-            onChangeText={(text) => setFdata({ ...fdata, confirmPassword: text })}
+            onChangeText={(text) =>
+              setFdata({ ...fdata, confirmPassword: text })
+            }
             secureTextEntry
           />
           {error ? <Text style={styles.errorText}>{error}</Text> : null}
-          <Button title="Submit" color="#0f4c75" style={styles.submit} onPress={handleSignup} />
+          <Button
+            title="Submit"
+            color="#0f4c75"
+            style={styles.submit}
+            onPress={handleSignup}
+          />
           <Text style={styles.already}>
             Already registered?&nbsp;
-            <Text onPress={() => navigation.navigate('Login')}>Login</Text>
+            <Text onPress={() => navigation.navigate("Login")}>Login</Text>
           </Text>
         </ScrollView>
       </TouchableWithoutFeedback>
@@ -105,8 +129,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   emailtext: {
-    color: '#000',
-    alignItems: 'flex-start',
+    color: "#000",
+    alignItems: "flex-start",
     marginTop: 13,
   },
   inner: {
@@ -119,15 +143,15 @@ const styles = StyleSheet.create({
     marginTop: 50,
   },
   input: {
-    width: '100%',
+    width: "100%",
     padding: 12,
     marginVertical: 6,
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: "#ccc",
     borderRadius: 6,
   },
   errorText: {
-    color: 'red',
+    color: "red",
     marginBottom: 12,
   },
   submit: {
@@ -135,8 +159,8 @@ const styles = StyleSheet.create({
   },
   already: {
     marginTop: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     marginStart: 70,
   },
 });
