@@ -34,13 +34,13 @@ export default function LoginScreen() {
     }
       try {
         console.log(fdata);
-        const response = await axios.post("http://192.168.4.153:3000/signin", fdata);
+        const response = await axios.post("http://10.50.0.131:3000/signin", fdata);
         
         if (response.data.error) {
           setErrormsg(response.data.error);
         } else {
           alert('Login successfully');
-          navigation.navigate('Success');
+          navigation.navigate('AppStack');
         }
       } catch (error) {
         setErrormsg('Error connecting to the server');
@@ -76,7 +76,6 @@ export default function LoginScreen() {
               style={styles.input}
               onChangeText={(text)=>setFdata({...fdata,password: text})}
               placeholder="Enter Password"
-              // value={password}/
               secureTextEntry
             />
             {errormsg ? (
