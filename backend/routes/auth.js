@@ -51,6 +51,28 @@ router.post("/signup", async (req, res) => {
   }
 });
 
+router.post('/get-username', async (req, res) => {
+  const {email} = req.body;// Fetch email from query parameter
+
+  if (!email) {
+      return res.status(400).json({ error: 'Email is required' });
+  }
+
+  try {
+      // Find user by email
+      const user = await User.findOne({ email });
+
+      if (!user) {
+          return res.status(404).json({ error: 'User not found' });
+      }
+
+      // Send back the username
+      res.status(200).json({ username: user.name });
+  } catch (error) {
+      res.status(500).json({ error: 'Server error' });
+  }
+});
+
 router.post("/verify", (req, res) => {
 
     console.log('sent by client - ', req.body);

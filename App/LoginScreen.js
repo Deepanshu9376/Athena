@@ -34,13 +34,15 @@ export default function LoginScreen() {
     }
       try {
         console.log(fdata);
-        const response = await axios.post("http://10.50.0.131:3000/signin", fdata);
-        
-        if (response.data.error) {
-          setErrormsg(response.data.error);
+        const response = await axios.post("http://10.50.0.124:4000/signin", fdata);
+        console.log('Full Response:', response);
+        if (response.data.token) {
+          // Store the email from fdata as it's not in the response
+          // await AsyncStorage.setItem("userEmail", fdata.email);
+          // Optionally, store the token too    
+          navigation.navigate('AppStack', { email: fdata.email });
         } else {
-          alert('Login successfully');
-          navigation.navigate('AppStack');
+          setErrormsg('Invalid login response');
         }
       } catch (error) {
         setErrormsg('Error connecting to the server');
@@ -61,7 +63,8 @@ export default function LoginScreen() {
             <Text style={styles.emailtext}>Email</Text>
             <TextInput
               style={styles.input}
-              onChangeText={(text)=>setFdata({...fdata,email:text})}
+              value={fdata.email}  // Set email value from state
+              onChangeText={(text) => setFdata({ ...fdata, email: text })} 
               placeholder="Enter Email"
               keyboardType="email-address"
               autoCapitalize="none"

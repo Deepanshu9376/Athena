@@ -1,31 +1,17 @@
-import { View, Text, StyleSheet, TouchableOpacity, FlatList, Image, ScrollView } from 'react-native';
-import React, { useState } from 'react';
+import React, {useState} from "react";
+import { View, Text, FlatList, Image, StyleSheet,TouchableOpacity } from "react-native";
 import Icon from 'react-native-vector-icons/Ionicons';
-import { Menu, Divider } from 'react-native-paper';
-import reactnative from '../assets/images/react native.png';
-import ai from '../assets/images/ai.jpg'
+import { Menu , Provider} from 'react-native-paper';
+import { useNavigation } from '@react-navigation/native'; 
 
-const coursesData = {
-  ongoing: [
-    { id: '1', title: 'Zero to Hero: React native', description: 'Description for Course 1' },
-    { id: '2', title: 'NLP and AI Generative', description: 'Description for Course 2' },
-  ],
-  completed: [
-    { id: '3', title: 'Course 3', description: 'Description for Course 3' },
-    { id: '4', title: 'Course 4', description: 'Description for Course 4' },
-  ],
-  expired: [
-    { id: '5', title: 'Course 5', description: 'Description for Course 5' },
-    { id: '6', title: 'Course 6', description: 'Description for Course 6' },
-  ],
-};
-
-const Home = () => {
+const Home = ({ enrolledCourses }) => {
   const [selectedType, setSelectedType] = useState('ongoing');
   const [menuVisible, setMenuVisible] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState(null);
+  const [currentScreen, setCurrentScreen] = useState('home');
+  const navigation = useNavigation();
 
-  const handleButtonPress = (type) => {
+   const handleButtonPress = (type) => {
     setSelectedType(type);
   };
 
@@ -39,171 +25,196 @@ const Home = () => {
     setMenuVisible(false);
   };
 
-  const renderCourse = ({ item }) => (
-    <View style={styles.courseCard}>
-      <Image source={reactnative} style={styles.courseImage} />
-      <View style={styles.courseInfo}>
-        <Text style={styles.courseTitle}>{item.title}</Text>
-        <TouchableOpacity onPress={() => openMenu(item)}>
-          <Icon name="ellipsis-vertical" size={20} color="#000" style={styles.menuIcon} />
-        </TouchableOpacity>
-      </View>
-      <Menu
-        visible={menuVisible && selectedCourse?.id === item.id}
-        onDismiss={closeMenu}
-        anchor={<View />}
-      >
-        <Menu.Item onPress={() => {}} title="Course Summary" />
-      </Menu>
-    </View>
-  );
+  const handleCoursePress = (course) => {
+    setSelectedCourse(course);
+    navigation.navigate('CourseDetail');
+  };
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-      <View style={[styles.card, styles.totalCourses]}>
-        <Text style={styles.cardTitle}>Total Courses</Text>
-        <Text style={styles.cardNumber}>21</Text>
-        <Icon name="list-outline" size={30} color="#fff" style={styles.icon} />
+    <Provider>
+      <View style={styles.container}>
+        {enrolledCourses.length > 0 ? (
+          <FlatList
+            data={enrolledCourses}
+            keyExtractor={(item, index) => (item.id ? item.id.toString() : index.toString())}
+            renderItem={({ item }) => (
+              <TouchableOpacity onPress={() => handleCoursePress(item)}>
+                <View style={styles.courseCard}>
+                  <Image source={item.image} style={styles.courseImage} />
+                  <View style={styles.courseInfo}>
+                    <View>
+                      <Text style={styles.courseTitle}>{item.name}</Text>
+                      <Text style={styles.courseDuration}>{item.duration}</Text>
+                    </View>
+                    <TouchableOpacity onPress={() => openMenu(item)}>
+                      <Icon name="ellipsis-vertical" size={24} color="#000" style={styles.menuIcon} />
+                    </TouchableOpacity>
+                  </View>
+                  <Menu
+                    visible={menuVisible && selectedCourse?.id === item.id}
+                    onDismiss={closeMenu}
+                    anchor={<View />} // Anchor ensures the menu opens when the icon is clicked
+                    onPress={()=>console.log("menu clicked")}
+                  >
+                    <Menu.Item
+                      icon={() => <Icon name="eye" size={20} color="#000" />}
+                      onPress={() => {
+                        console.log("View Certificate pressed for", item.name);
+                        closeMenu();
+                      }}
+                      title="View Certificate"
+                    />
+                    <Menu.Item
+                      icon={() => <Icon name="document-text" size={20} color="#000" />}
+                      onPress={() => {
+                        console.log("Course Summary pressed for", item.name);
+                        closeMenu();
+                      }}
+                      title="Course Summary"
+                    />
+                  </Menu>
+                </View>
+              </TouchableOpacity>
+            )}
+          />
+        ) : (
+          <Text>No courses enrolled yet.</Text>
+        )}
       </View>
-      <View style={[styles.card, styles.completedCourses]}>
-        <Text style={styles.cardTitle}>Completed Courses</Text>
-        <Text style={styles.cardNumber}>17</Text>
-        <Icon name="checkmark-circle-outline" size={30} color="#fff" style={styles.icon} />
-      </View>
-      <View style={[styles.card, styles.ongoingCourses]}>
-        <Text style={styles.cardTitle}>Ongoing Courses</Text>
-        <Text style={styles.cardNumber}>1</Text>
-        <Icon name="play-circle-outline" size={30} color="#fff" style={styles.icon} />
-      </View>
-      <View style={[styles.card, styles.totalTrainingTime]}>
-        <Text style={styles.cardTitle}>Total Training Time</Text>
-        <Text style={styles.cardNumber}>88h 00m</Text>
-        <Icon name="time-outline" size={30} color="#fff" style={styles.icon} />
-      </View>
-
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity
-          style={[styles.button, selectedType === 'ongoing' && styles.activeButton]}
-          onPress={() => handleButtonPress('ongoing')}
-        >
-          <Text style={styles.buttonText}>Ongoing</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.button, selectedType === 'completed' && styles.activeButton]}
-          onPress={() => handleButtonPress('completed')}
-        >
-          <Text style={styles.buttonText}>Completed</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.button, selectedType === 'expired' && styles.activeButton]}
-          onPress={() => handleButtonPress('expired')}
-        >
-          <Text style={styles.buttonText}>Expired</Text>
-        </TouchableOpacity>
-      </View>
-
-      <FlatList
-        data={coursesData[selectedType]}
-        renderItem={renderCourse}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={styles.listContentContainer}
-      />
-    </ScrollView>
+    </Provider>
   );
 };
 
-export default Home;
 
+export default Home;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    padding: 20,
   },
   contentContainer: {
     padding: 20,
-    paddingBottom: 100, // Add padding to prevent overlap with the bottom navigation bar
+    paddingBottom: 100,
   },
   card: {
-    width: '100%',
+    width: "100%",
     borderRadius: 10,
     padding: 20,
     marginVertical: 10,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    shadowColor: '#000',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.8,
     shadowRadius: 2,
     elevation: 5,
   },
   totalCourses: {
-    backgroundColor: '#007aff',
+    backgroundColor: "#007aff",
   },
   completedCourses: {
-    backgroundColor: '#4cd137',
+    backgroundColor: "#4cd137",
   },
   ongoingCourses: {
-    backgroundColor: '#ff4757',
+    backgroundColor: "#ff4757",
   },
   totalTrainingTime: {
-    backgroundColor: '#7f8cff',
+    backgroundColor: "#7f8cff",
   },
   cardTitle: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 16,
   },
   cardNumber: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   icon: {
     marginLeft: 10,
   },
   buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    width: '100%',
+    flexDirection: "row",
+    justifyContent: "space-around",
+    width: "100%",
     marginVertical: 20,
   },
   button: {
     padding: 10,
     borderRadius: 10,
-    backgroundColor: '#ddd',
+    backgroundColor: "#ddd",
   },
   activeButton: {
-    backgroundColor: '#0f4c75',
+    backgroundColor: "#0f4c75",
   },
   buttonText: {
-    color: '#fff',
+    color: "#fff",
   },
   courseCard: {
     padding: 20,
     marginVertical: 10,
     borderRadius: 10,
-    backgroundColor: '#f0f0f0',
-    shadowColor: '#000',
+    backgroundColor: "#f0f0f0",
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.8,
     shadowRadius: 2,
     elevation: 5,
   },
   courseImage: {
-    width: '100%',
+    width: "100%",
     height: 150,
     marginBottom: 10,
     borderRadius: 10,
   },
   courseInfo: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   courseTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   menuIcon: {
-    padding: 5,
+    padding: 10,
+  },
+  listContentContainer: {
+    paddingBottom: 100,
+  },
+  courseDetailTitle: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 20,
+  },
+  backButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 20,
+  },
+  backButtonText: {
+    marginLeft: 5,
+    fontSize: 16,
+  },
+  topicItem: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: 15,
+    marginVertical: 5,
+    borderRadius: 10,
+    backgroundColor: "#f0f0f0",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.8,
+    shadowRadius: 2,
+    elevation: 5,
+  },
+  topicText: {
+    fontSize: 16,
+  },
+  menuIcon: {
+    padding: 10,
   },
 });
