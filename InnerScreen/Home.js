@@ -1,17 +1,33 @@
-import React, {useState} from "react";
-import { View, Text, FlatList, Image, StyleSheet,TouchableOpacity } from "react-native";
-import Icon from 'react-native-vector-icons/Ionicons';
-import { Menu , Provider} from 'react-native-paper';
-import { useNavigation } from '@react-navigation/native'; 
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  FlatList,
+  Image,
+  StyleSheet,
+  TouchableOpacity,
+} from "react-native";
+import Icon from "react-native-vector-icons/Ionicons";
+import { Menu, Provider } from "react-native-paper";
+import { useNavigation } from "@react-navigation/native";
+import { ScrollView } from "react-native-gesture-handler";
 
-const Home = ({ enrolledCourses }) => {
-  const [selectedType, setSelectedType] = useState('ongoing');
+const Home = ({
+  enrolledCourses = [],
+  completedCourses = [],
+  expiredCourses = [],
+}) => {
+  const [selectedType, setSelectedType] = useState("ongoing");
   const [menuVisible, setMenuVisible] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState(null);
-  const [currentScreen, setCurrentScreen] = useState('home');
+  const [currentScreen, setCurrentScreen] = useState("home");
   const navigation = useNavigation();
+  const filteredCourses = enrolledCourses.filter(
+    (course) => course.status === selectedType
+  );
+  const [loginTime, setLoginTime] = useState(new Date());
 
-   const handleButtonPress = (type) => {
+  const handleButtonPress = (type) => {
     setSelectedType(type);
   };
 
@@ -27,16 +43,102 @@ const Home = ({ enrolledCourses }) => {
 
   const handleCoursePress = (course) => {
     setSelectedCourse(course);
-    navigation.navigate('CourseDetail');
+    navigation.navigate("CourseDetail");
   };
+
+  const calculateTrainingTime = () => {
+    const currentTime = new Date();
+    const diff = currentTime - loginTime; // Difference in milliseconds
+    const diffMinutes = Math.floor(diff / 1000 / 60);
+    const hours = Math.floor(diffMinutes / 60);
+    const minutes = diffMinutes % 60;
+    return `${hours.toString().padStart(2, "0")}h:${minutes
+      .toString()
+      .padStart(2, "0")}M`;
+  };
+
+  const getCoursesByType = () => {
+    if (selectedType === "ongoing") {
+      return enrolledCourses;
+    } else if (selectedType === "completed") {
+      return completedCourses;
+    } else if (selectedType === "expired") {
+      return expiredCourses;
+    }
+    return [];
+  };
+
+  const coursesToDisplay = getCoursesByType();
 
   return (
     <Provider>
-      <View style={styles.container}>
-        {enrolledCourses.length > 0 ? (
+      <ScrollView style={styles.container}>
+        <View style={styles.headerContainer}>
+          <View style={[styles.card, styles.totalCourses]}>
+            <Text style={styles.cardTitle}>Total Number of Courses:</Text>
+            <Text style={styles.cardNumber}>12</Text>
+            <Icon name="list-outline" size={30} color="#fff" style={styles.icon} />
+          </View>
+          <View style={[styles.card, styles.ongoingCourses]}>
+            <Text style={styles.cardTitle}>
+              Ongoing Courses: 
+            </Text>
+            <Text style={styles.cardNumber}>{enrolledCourses.length}</Text>
+            <Icon name="checkmark-circle-outline" size={30} color="#fff" style={styles.icon} />
+          </View>
+          <View style={[styles.card, styles.ongoingCourses]}>
+            <Text style={styles.cardTitle}>
+              Completed Courses:
+            </Text>
+            <Text style={styles.cardNumber}> {completedCourses.length}</Text>
+            <Icon name="play-circle-outline" size={30} color="#fff" style={styles.icon} />
+          </View>
+          <View style={[styles.card, styles.totalTrainingTime]}>
+            <Text style={styles.cardTitle}>
+              Total Training Time: 
+            </Text>
+            <Text style={styles.cardNumber}>{calculateTrainingTime()}</Text>
+            <Icon name="time-outline" size={30} color="#fff" style={styles.icon} />
+          </View>
+        </View>
+        {/* Buttons for Course Type Selection */}
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity
+            style={[
+              styles.button,
+              selectedType === "ongoing" && styles.activeButton,
+            ]}
+            onPress={() => handleButtonPress("ongoing")}
+          >
+            <Text style={styles.buttonText}>Ongoing</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[
+              styles.button,
+              selectedType === "completed" && styles.activeButton,
+            ]}
+            onPress={() => handleButtonPress("completed")}
+          >
+            <Text style={styles.buttonText}>Completed</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[
+              styles.button,
+              selectedType === "expired" && styles.activeButton,
+            ]}
+            onPress={() => handleButtonPress("expired")}
+          >
+            <Text style={styles.buttonText}>Expired</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Course List */}
+        {coursesToDisplay.length > 0 ? (
           <FlatList
-            data={enrolledCourses}
-            keyExtractor={(item, index) => (item.id ? item.id.toString() : index.toString())}
+            data={coursesToDisplay}
+            keyExtractor={(item, index) =>
+              item.id ? item.id.toString() : index.toString()
+            }
             renderItem={({ item }) => (
               <TouchableOpacity onPress={() => handleCoursePress(item)}>
                 <View style={styles.courseCard}>
@@ -47,14 +149,18 @@ const Home = ({ enrolledCourses }) => {
                       <Text style={styles.courseDuration}>{item.duration}</Text>
                     </View>
                     <TouchableOpacity onPress={() => openMenu(item)}>
-                      <Icon name="ellipsis-vertical" size={24} color="#000" style={styles.menuIcon} />
+                      <Icon
+                        name="ellipsis-vertical"
+                        size={24}
+                        color="#000"
+                        style={styles.menuIcon}
+                      />
                     </TouchableOpacity>
                   </View>
                   <Menu
                     visible={menuVisible && selectedCourse?.id === item.id}
                     onDismiss={closeMenu}
-                    anchor={<View />} // Anchor ensures the menu opens when the icon is clicked
-                    onPress={()=>console.log("menu clicked")}
+                    anchor={<View />}
                   >
                     <Menu.Item
                       icon={() => <Icon name="eye" size={20} color="#000" />}
@@ -65,7 +171,9 @@ const Home = ({ enrolledCourses }) => {
                       title="View Certificate"
                     />
                     <Menu.Item
-                      icon={() => <Icon name="document-text" size={20} color="#000" />}
+                      icon={() => (
+                        <Icon name="document-text" size={20} color="#000" />
+                      )}
                       onPress={() => {
                         console.log("Course Summary pressed for", item.name);
                         closeMenu();
@@ -78,13 +186,12 @@ const Home = ({ enrolledCourses }) => {
             )}
           />
         ) : (
-          <Text>No courses enrolled yet.</Text>
+          <Text>No courses here.</Text>
         )}
-      </View>
+      </ScrollView>
     </Provider>
   );
 };
-
 
 export default Home;
 const styles = StyleSheet.create({
@@ -92,29 +199,32 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
   },
+  headerContainer: {
+    marginBottom: 20,
+  },
   contentContainer: {
     padding: 20,
     paddingBottom: 100,
   },
   card: {
-    width: "100%",
+    width: '100%',
     borderRadius: 10,
     padding: 20,
     marginVertical: 10,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    shadowColor: "#000",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.8,
     shadowRadius: 2,
     elevation: 5,
   },
   totalCourses: {
-    backgroundColor: "#007aff",
+    backgroundColor: '#007aff',
   },
   completedCourses: {
-    backgroundColor: "#4cd137",
+    backgroundColor: "#000",
   },
   ongoingCourses: {
     backgroundColor: "#ff4757",
@@ -128,7 +238,7 @@ const styles = StyleSheet.create({
   },
   cardNumber: {
     color: "#fff",
-    fontSize: 24,
+    fontSize: 16,
     fontWeight: "bold",
   },
   icon: {

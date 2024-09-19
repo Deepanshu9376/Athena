@@ -9,6 +9,7 @@ import {
   Paragraph,
 } from "react-native-paper";
 import { Colors } from "react-native/Libraries/NewAppScreen";
+import { useNavigation } from "@react-navigation/native";
 
 const Courses = ({ enrolledCourses, setEnrolledCourses }) => {
   // Initialize availableCourses state
@@ -124,6 +125,8 @@ const Courses = ({ enrolledCourses, setEnrolledCourses }) => {
     }
   };
 
+  const navigation=useNavigation();
+
   return (
     <View style={styles.container}>
       {availableCourses.length > 0 ? (
@@ -151,7 +154,7 @@ const Courses = ({ enrolledCourses, setEnrolledCourses }) => {
                   />
                   <Button
                     mode="contained"
-                    onPress={() => console.log("View Course")}
+                    onPress={() => navigation.navigate("CourseDetail")}
                   >
                     View Course
                   </Button>

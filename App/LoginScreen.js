@@ -34,7 +34,7 @@ export default function LoginScreen() {
     }
       try {
         console.log(fdata);
-        const response = await axios.post("http://10.50.0.124:4000/signin", fdata);
+        const response = await axios.post("http://10.50.1.14:4000/signin", fdata);
         console.log('Full Response:', response);
         if (response.data.token) {
           // Store the email from fdata as it's not in the response

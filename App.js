@@ -62,7 +62,7 @@ function BottomTabNavigator({ enrolledCourses, setEnrolledCourses }) {
 
 function CustomNavigationBar({ email }) {
   const navigation = useNavigation();
-  const [menuVisible, setMenuVisible] = React.useState(false);
+  const [menuVisible, setMenuVisible] = React.useState(true);
   const [userName, setUserName] = React.useState("");
 
   const openMenu = () => setMenuVisible(true);
