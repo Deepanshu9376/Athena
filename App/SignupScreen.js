@@ -41,7 +41,7 @@ export default function SignupScreen({ navigation }) {
     try {
       console.log(fdata);
       // const response = await axios.post('http://10.50.0.142:3000/verify', fdata);
-      fetch("http://10.50.0.124:4000/verify", {
+      fetch("http://10.50.1.14:4000/verify", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

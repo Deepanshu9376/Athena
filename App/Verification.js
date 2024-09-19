@@ -43,7 +43,7 @@ const Verification = ({ navigation, route }) => {
         name: userdata[0]?.name,
       };
 
-      fetch("http://10.50.0.124:4000/signup", {
+      fetch("http://10.50.1.14:4000/signup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

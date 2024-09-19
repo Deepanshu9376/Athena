@@ -70,126 +70,130 @@ const Home = ({
 
   const coursesToDisplay = getCoursesByType();
 
+  const renderHeader = () => (
+    <View>
+      <View style={styles.headerContainer}>
+        <View style={[styles.card, styles.totalCourses]}>
+          <Text style={styles.cardTitle}>Total Number of Courses:</Text>
+          <Text style={styles.cardNumber}>12</Text>
+          <Icon name="list-outline" size={30} color="#fff" style={styles.icon} />
+        </View>
+        <View style={[styles.card, styles.ongoingCourses]}>
+          <Text style={styles.cardTitle}>Ongoing Courses:</Text>
+          <Text style={styles.cardNumber}>{enrolledCourses.length}</Text>
+          <Icon
+            name="checkmark-circle-outline"
+            size={30}
+            color="#fff"
+            style={styles.icon}
+          />
+        </View>
+        <View style={[styles.card, styles.ongoingCourses]}>
+          <Text style={styles.cardTitle}>Completed Courses:</Text>
+          <Text style={styles.cardNumber}>{completedCourses.length}</Text>
+          <Icon
+            name="play-circle-outline"
+            size={30}
+            color="#fff"
+            style={styles.icon}
+          />
+        </View>
+        <View style={[styles.card, styles.totalTrainingTime]}>
+          <Text style={styles.cardTitle}>Total Training Time:</Text>
+          <Text style={styles.cardNumber}>{calculateTrainingTime()}</Text>
+          <Icon name="time-outline" size={30} color="#fff" style={styles.icon} />
+        </View>
+      </View>
+
+      {/* Buttons for Course Type Selection */}
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity
+          style={[
+            styles.button,
+            selectedType === "ongoing" && styles.activeButton,
+          ]}
+          onPress={() => handleButtonPress("ongoing")}
+        >
+          <Text style={styles.buttonText}>Ongoing</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[
+            styles.button,
+            selectedType === "completed" && styles.activeButton,
+          ]}
+          onPress={() => handleButtonPress("completed")}
+        >
+          <Text style={styles.buttonText}>Completed</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[
+            styles.button,
+            selectedType === "expired" && styles.activeButton,
+          ]}
+          onPress={() => handleButtonPress("expired")}
+        >
+          <Text style={styles.buttonText}>Expired</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+
   return (
     <Provider>
-      <ScrollView style={styles.container}>
-        <View style={styles.headerContainer}>
-          <View style={[styles.card, styles.totalCourses]}>
-            <Text style={styles.cardTitle}>Total Number of Courses:</Text>
-            <Text style={styles.cardNumber}>12</Text>
-            <Icon name="list-outline" size={30} color="#fff" style={styles.icon} />
-          </View>
-          <View style={[styles.card, styles.ongoingCourses]}>
-            <Text style={styles.cardTitle}>
-              Ongoing Courses: 
-            </Text>
-            <Text style={styles.cardNumber}>{enrolledCourses.length}</Text>
-            <Icon name="checkmark-circle-outline" size={30} color="#fff" style={styles.icon} />
-          </View>
-          <View style={[styles.card, styles.ongoingCourses]}>
-            <Text style={styles.cardTitle}>
-              Completed Courses:
-            </Text>
-            <Text style={styles.cardNumber}> {completedCourses.length}</Text>
-            <Icon name="play-circle-outline" size={30} color="#fff" style={styles.icon} />
-          </View>
-          <View style={[styles.card, styles.totalTrainingTime]}>
-            <Text style={styles.cardTitle}>
-              Total Training Time: 
-            </Text>
-            <Text style={styles.cardNumber}>{calculateTrainingTime()}</Text>
-            <Icon name="time-outline" size={30} color="#fff" style={styles.icon} />
-          </View>
-        </View>
-        {/* Buttons for Course Type Selection */}
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity
-            style={[
-              styles.button,
-              selectedType === "ongoing" && styles.activeButton,
-            ]}
-            onPress={() => handleButtonPress("ongoing")}
-          >
-            <Text style={styles.buttonText}>Ongoing</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[
-              styles.button,
-              selectedType === "completed" && styles.activeButton,
-            ]}
-            onPress={() => handleButtonPress("completed")}
-          >
-            <Text style={styles.buttonText}>Completed</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[
-              styles.button,
-              selectedType === "expired" && styles.activeButton,
-            ]}
-            onPress={() => handleButtonPress("expired")}
-          >
-            <Text style={styles.buttonText}>Expired</Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* Course List */}
-        {coursesToDisplay.length > 0 ? (
-          <FlatList
-            data={coursesToDisplay}
-            keyExtractor={(item, index) =>
-              item.id ? item.id.toString() : index.toString()
-            }
-            renderItem={({ item }) => (
-              <TouchableOpacity onPress={() => handleCoursePress(item)}>
-                <View style={styles.courseCard}>
-                  <Image source={item.image} style={styles.courseImage} />
-                  <View style={styles.courseInfo}>
-                    <View>
-                      <Text style={styles.courseTitle}>{item.name}</Text>
-                      <Text style={styles.courseDuration}>{item.duration}</Text>
-                    </View>
-                    <TouchableOpacity onPress={() => openMenu(item)}>
-                      <Icon
-                        name="ellipsis-vertical"
-                        size={24}
-                        color="#000"
-                        style={styles.menuIcon}
-                      />
-                    </TouchableOpacity>
-                  </View>
-                  <Menu
-                    visible={menuVisible && selectedCourse?.id === item.id}
-                    onDismiss={closeMenu}
-                    anchor={<View />}
-                  >
-                    <Menu.Item
-                      icon={() => <Icon name="eye" size={20} color="#000" />}
-                      onPress={() => {
-                        console.log("View Certificate pressed for", item.name);
-                        closeMenu();
-                      }}
-                      title="View Certificate"
-                    />
-                    <Menu.Item
-                      icon={() => (
-                        <Icon name="document-text" size={20} color="#000" />
-                      )}
-                      onPress={() => {
-                        console.log("Course Summary pressed for", item.name);
-                        closeMenu();
-                      }}
-                      title="Course Summary"
-                    />
-                  </Menu>
-                </View>
+    <FlatList
+      data={coursesToDisplay}
+      keyExtractor={(item, index) =>
+        item.id ? item.id.toString() : index.toString()
+      }
+      ListHeaderComponent={renderHeader}
+      renderItem={({ item }) => (
+        <TouchableOpacity onPress={() => handleCoursePress(item)}>
+          <View style={styles.courseCard}>
+            <Image source={item.image} style={styles.courseImage} />
+            <View style={styles.courseInfo}>
+              <View>
+                <Text style={styles.courseTitle}>{item.name}</Text>
+                <Text style={styles.courseDuration}>{item.duration}</Text>
+              </View>
+              <TouchableOpacity onPress={() => openMenu(item)}>
+                <Icon
+                  name="ellipsis-vertical"
+                  size={24}
+                  color="#000"
+                  style={styles.menuIcon}
+                />
               </TouchableOpacity>
-            )}
-          />
-        ) : (
-          <Text>No courses here.</Text>
-        )}
-      </ScrollView>
-    </Provider>
+            </View>
+            <Menu
+              visible={menuVisible && selectedCourse?.id === item.id}
+              onDismiss={closeMenu}
+              anchor={<View />}
+            >
+              <Menu.Item
+                icon={() => <Icon name="eye" size={20} color="#000" />}
+                onPress={() => {
+                  console.log("View Certificate pressed for", item.name);
+                  closeMenu();
+                }}
+                title="View Certificate"
+              />
+              <Menu.Item
+                icon={() => (
+                  <Icon name="document-text" size={20} color="#000" />
+                )}
+                onPress={() => {
+                  console.log("Course Summary pressed for", item.name);
+                  closeMenu();
+                }}
+                title="Course Summary"
+              />
+            </Menu>
+          </View>
+        </TouchableOpacity>
+      )}
+      contentContainerStyle={styles.contentContainer}
+    />
+  </Provider>
   );
 };
 
