@@ -1,43 +1,47 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, Image, StyleSheet, FlatList } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TouchableOpacity, Image, StyleSheet, ActivityIndicator } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { useNavigation } from '@react-navigation/native'; // for navigation
+import { useNavigation, useRoute } from '@react-navigation/native'; // for navigation
 import playIcon from '../assets/images/courses/play.png'; // Import play icon
-import Card from '../Components/Card';
-import localThumbnail from '../assets/images/react native.png'; // Import a local image thumbnail
 import { useSelector } from 'react-redux';
-
-const videoData = [
-  {
-    id: '1',
-    title: 'Introduction',
-    videos: [
-      {
-        image: localThumbnail, // Use local image
-        name: 'Intro Video',
-        description: 'This is the introduction video.',
-        videoUrl: 'https://www.youtube.com/watch?v=QFaFIcGhPoM&list=PLC3y8-rFHvwgg3vaYJgHGnModB54rxOk3&index=1', // Add YouTube URL
-      },
-    ],
-  },
-  {
-    id: '2',
-    title: 'React',
-    videos: [
-      {
-        image: localThumbnail, // Use local image
-        name: 'React Basics',
-        description: 'Introduction to React.',
-        videoUrl: 'https://www.youtube.com/watch?v=QFaFIcGhPoM&list=PLC3y8-rFHvwgg3vaYJgHGnModB54rxOk3&index=2',
-      },
-    ],
-  },
-  // Add other sections...
-];
+import { ScrollView } from 'react-native-gesture-handler';
 
 const CourseDetails = () => {
-  const [expandedSections, setExpandedSections] = useState([]);
+  const [courseData, setCourseData] = useState(null); // Store fetched data
+  const [loading, setLoading] = useState(true); // Loading state
+  const [error, setError] = useState(null); // Error state
+  const [expandedSections, setExpandedSections] = useState([]); // Expanded sections state
   const navigation = useNavigation();
+  const route = useRoute();
+  const { courseName } = route.params; // Get course name from route
+
+  useEffect(() => {
+    // Fetch course details from the API
+    const fetchCourseDetails = async () => {
+      try {
+        const response = await fetch('http://10.50.1.14:4000/courseName', {
+          method: 'POST', // Use POST method
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ courseName }), // Send courseName in the body
+        });
+  
+        if (!response.ok) {
+          throw new Error(`HTTP Error! status: ${response.status}`);
+        }
+  
+        const data = await response.json();
+        setCourseData(data);
+      } catch (err) {
+        setError('Failed to load course details.');
+        console.log(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchCourseDetails();
+  }, [courseName]);  
 
   const toggleSection = (id) => {
     setExpandedSections((prevSections) =>
@@ -51,27 +55,52 @@ const CourseDetails = () => {
     navigation.navigate('VideoPlayerScreen', { videoUrl }); // Navigate to the video player screen
   };
 
+  if (loading) {
+    return (
+      <View style={styles.center}>
+        <ActivityIndicator size="large" color="#0000ff" />
+        <Text>Loading...</Text>
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={styles.center}>
+        <Text>{error}</Text>
+      </View>
+    );
+  }
+
+  if (!courseData || !courseData.sections) {
+    return (
+      <View style={styles.center}>
+        <Text>No course data available</Text>
+      </View>
+    );
+  }
+
   return (
-    <View style={styles.container}>
-      {videoData.map((section) => (
-        <View key={section.id}>
+    <ScrollView style={styles.container}>
+      {courseData.sections.map((section) => (
+        <View key={section._id}>
           <TouchableOpacity
             style={styles.listItem}
-            onPress={() => toggleSection(section.id)}
+            onPress={() => toggleSection(section._id)}
           >
             <Text style={styles.listItemText}>{section.title}</Text>
             <Icon
-              name={expandedSections.includes(section.id) ? 'chevron-up' : 'chevron-down'}
+              name={expandedSections.includes(section._id) ? 'chevron-up' : 'chevron-down'}
               size={20}
               color="#000"
             />
           </TouchableOpacity>
-          {expandedSections.includes(section.id) && (
+          {expandedSections.includes(section._id) && (
             <View style={styles.videoList}>
-              {section.videos.map((video, index) => (
-                <View key={index} style={styles.videoItem}>
+              {section.videos.map((video) => (
+                <View key={video._id} style={styles.videoItem}>
                   <TouchableOpacity onPress={() => handlePlayVideo(video.videoUrl)}>
-                    <Image source={video.image} style={styles.thumbnail} />
+                    <Image source={{ uri: video.image }} style={styles.thumbnail} />
                     <Image source={playIcon} style={styles.playIcon} />
                   </TouchableOpacity>
                   <View style={styles.videoInfo}>
@@ -84,7 +113,7 @@ const CourseDetails = () => {
           )}
         </View>
       ))}
-    </View>
+    </ScrollView>
   );
 };
 
@@ -94,6 +123,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
+    marginBottom: 20
+  },
+  center: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   listItem: {
     flexDirection: 'row',
@@ -111,7 +146,7 @@ const styles = StyleSheet.create({
   },
   videoItem: {
     flexDirection: 'row',
-    marginBottom: 15,
+    marginBottom: 5,
   },
   thumbnail: {
     width: 100,

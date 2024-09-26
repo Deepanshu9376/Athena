@@ -86,9 +86,7 @@ const Verification = ({ navigation, route }) => {
               placeholder="Enter 6 digit verification code"
               onPressIn={() => setErrormsg(null)}
             />
-            {errormsg ? (
-                <Text style={styles.errorText}>{errormsg}</Text>
-              ) : null}
+            {errormsg ? <Text style={styles.errorText}>{errormsg}</Text> : null}
           </View>
           <View style={styles.forgot}>
             <Text style={styles.button} onPress={() => Sendtobackend()}>
@@ -96,7 +94,10 @@ const Verification = ({ navigation, route }) => {
             </Text>
             <Text style={styles.errorInput}>
               Don't have an account?&nbsp;
-              <Text style={styles.forgottext} onPress={() => navigation.navigate("Signup")}>
+              <Text
+                style={styles.forgottext}
+                onPress={() => navigation.navigate("Signup")}
+              >
                 Create a new account
               </Text>
             </Text>
@@ -117,30 +118,30 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
   },
-  verify:{
-    alignItems:'center',
+  verify: {
+    alignItems: "center",
     paddingStart: 20,
     fontSize: 30,
-    color: '#000'
+    color: "#000",
   },
-  button:{
-    backgroundColor: '#0f4c75',
-    color: '#fff',
+  button: {
+    backgroundColor: "#0f4c75",
+    color: "#fff",
     padding: 4,
     marginEnd: 70,
     borderRadius: 5,
     fontSize: 18,
     minWidth: 150,
-    textAlign: 'center',
+    textAlign: "center",
     margin: 10,
-    alignItems:'center'
+    alignItems: "center",
   },
   image: {
     width: 250,
     height: 250,
     resizeMode: "contain",
     marginTop: 10,
-    marginTop: 24
+    marginTop: 24,
   },
   input: {
     height: 40,
