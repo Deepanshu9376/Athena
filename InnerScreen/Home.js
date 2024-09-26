@@ -43,7 +43,7 @@ const Home = ({
 
   const handleCoursePress = (course) => {
     setSelectedCourse(course);
-    navigation.navigate("CourseDetail");
+    navigation.navigate("CourseDetail", { courseName: course.name });
   };
 
   const calculateTrainingTime = () => {
@@ -56,6 +56,7 @@ const Home = ({
       .toString()
       .padStart(2, "0")}M`;
   };
+  
 
   const getCoursesByType = () => {
     if (selectedType === "ongoing") {

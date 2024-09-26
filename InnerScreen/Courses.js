@@ -125,7 +125,7 @@ const Courses = ({ enrolledCourses, setEnrolledCourses }) => {
     }
   };
 
-  const navigation=useNavigation();
+  const navigation = useNavigation();
 
   return (
     <View style={styles.container}>
@@ -141,15 +141,15 @@ const Courses = ({ enrolledCourses, setEnrolledCourses }) => {
               <View style={styles.courseDetails}>
                 <Text style={styles.courseName}>{item.name}</Text>
                 <View style={styles.courseDurationContainer}>
-              <Icon name="access-time" size={16} />
-              <Text style={styles.courseDuration}>{item.duration}</Text>
-            </View>
-            
+                  <Icon name="access-time" size={16} />
+                  <Text style={styles.courseDuration}>{item.duration}</Text>
+                </View>
+
                 <View style={styles.buttonContainer}>
                   <IconButton
                     icon="heart-outline"
                     size={20}
-                    style={{backgroundColor:"#FFF"}}
+                    style={{ backgroundColor: "#FFF" }}
                     onPress={() => console.log("Added to Wishlist")}
                   />
                   <Button
@@ -158,7 +158,11 @@ const Courses = ({ enrolledCourses, setEnrolledCourses }) => {
                   >
                     View Course
                   </Button>
-                  <Button mode="contained" onPress={() => handleEnroll(item)} style={{margin:5}}>
+                  <Button
+                    mode="contained"
+                    onPress={() => handleEnroll(item)}
+                    style={{ margin: 5 }}
+                  >
                     Enroll
                   </Button>
                 </View>
@@ -209,7 +213,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: 5,
     marginBottom: 10,
-    marginLeft: 8
+    marginLeft: 8,
   },
   courseDuration: {
     marginLeft: 5,
@@ -218,6 +222,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    backgroundColor: '#0f4c75'
+    backgroundColor: "#0f4c75",
   },
 });

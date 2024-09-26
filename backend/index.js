@@ -14,6 +14,10 @@ require("./models/Newuser")
 const authRoutes=require("./routes/auth");
 app.use(authRoutes);
 
+require("./models/Courses")
+const courseRoutes=require("./routes/courseAuth");
+app.use(courseRoutes);
+
 app.get("/",(req,res)=>{
   res.send("This Signup page kaam kar rha hai")
 })
