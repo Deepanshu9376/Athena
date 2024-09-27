@@ -10,6 +10,7 @@ import {
 } from "react-native-paper";
 import { Colors } from "react-native/Libraries/NewAppScreen";
 import { useNavigation } from "@react-navigation/native";
+import { TouchableOpacity } from "react-native-gesture-handler";
 
 const Courses = ({ enrolledCourses, setEnrolledCourses }) => {
   // Initialize availableCourses state
@@ -126,6 +127,29 @@ const Courses = ({ enrolledCourses, setEnrolledCourses }) => {
   };
 
   const navigation = useNavigation();
+  const [selectedCourse, setSelectedCourse] = useState(null);
+
+  const handleCoursePress = (course) => {
+    setSelectedCourse(course);
+    navigation.navigate("Summary", { courseName: course.name });
+  };
+  
+  const [wishlist,setWishList]=useState([]);
+  const navigataion=useNavigation();
+  const handleWishlist=(course)=>{
+    if(!wishlist.includes(course)){
+      setWishList([...wishlist,course]);
+      console.log('Added to wishlist');
+    }
+    else{
+      setWishList(wishlist.filter((item)=>item!=course));
+      console.log('Remove from Wishlist')
+    }
+  }
+
+  const isInWishlist=(course)=>{
+    return wishlist.includes(course);
+  }
 
   return (
     <View style={styles.container}>
@@ -137,37 +161,43 @@ const Courses = ({ enrolledCourses, setEnrolledCourses }) => {
           }
           renderItem={({ item }) => (
             <View style={styles.courseContainer}>
-              <Image source={item.image} style={styles.courseImage} />
-              <View style={styles.courseDetails}>
-                <Text style={styles.courseName}>{item.name}</Text>
-                <View style={styles.courseDurationContainer}>
-                  <Icon name="access-time" size={16} />
-                  <Text style={styles.courseDuration}>{item.duration}</Text>
-                </View>
+                <TouchableOpacity onPress={() => handleCoursePress(item)}>
+                <Image source={item.image} style={styles.courseImage} />
+                </TouchableOpacity>
+                <View style={styles.courseDetails}>
+                  <Text style={styles.courseName}>{item.name}</Text>
+                  <View style={styles.courseDurationContainer}>
+                    <Icon name="access-time" size={16} />
+                    <Text style={styles.courseDuration}>{item.duration}</Text>
+                  </View>
 
-                <View style={styles.buttonContainer}>
-                  <IconButton
-                    icon="heart-outline"
-                    size={20}
-                    style={{ backgroundColor: "#FFF" }}
-                    onPress={() => console.log("Added to Wishlist")}
-                  />
-                  <Button
-                    mode="contained"
-                    onPress={() => navigation.navigate("CourseDetail")}
-                  >
-                    View Course
-                  </Button>
-                  <Button
-                    mode="contained"
-                    onPress={() => handleEnroll(item)}
-                    style={{ margin: 5 }}
-                  >
-                    Enroll
-                  </Button>
+                  <View style={styles.buttonContainer}>
+                    <IconButton
+                      icon={isInWishlist(item)?"heart":"heart-outline"}
+                      size={20}
+                      style={{ backgroundColor: "#FFF" }}
+                      iconColor={isInWishlist(item) ? "red" : "black"}
+                      // color={isInWishlist(item.name) ? "red" : "black"}
+                      onPress={() => handleWishlist(item)}
+                    />
+                    <Button
+                      mode="contained"
+                      onPress={() => handleCoursePress(item)}
+                    >
+                      View Course
+                    </Button>
+                    <Button
+                      mode="contained"
+                      onPress={() => handleEnroll(item)}
+                      style={{ margin: 5 }}
+                    >
+                      Enroll
+                    </Button>
+                  </View>
                 </View>
+                
               </View>
-            </View>
+         
           )}
         />
       ) : (

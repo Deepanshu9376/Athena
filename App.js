@@ -12,12 +12,13 @@ import Verification from './App/Verification';
 import Home from './InnerScreen/Home';
 import Courses from './InnerScreen/Courses';
 import Profile from './InnerScreen/Profile';
-import Puzzles from './InnerScreen/Puzzles';
+import Test from './InnerScreen/Test';
 import Icon from 'react-native-vector-icons/Ionicons';
 import athena from "./assets/images/h.png";
 import { useNavigation } from '@react-navigation/native';
 import VideoPlayerScreen from './InnerScreen/VideoPlayerScreen';
 import CourseDetails from './InnerScreen/CourseDetails';
+import Summary from './InnerScreen/Summary'
 import axios from 'react-native-axios';
 
 const Stack = createStackNavigator();
@@ -36,9 +37,9 @@ function BottomTabNavigator({ enrolledCourses, setEnrolledCourses }) {
               iconName = 'home-outline';
               break;
             case 'Courses':
-              iconName = 'book-outline';
+              iconName = 'earth-outline';
               break;
-            case 'Puzzles':
+            case 'Test':
               iconName = 'book-outline';
               break;
             case 'Profile':
@@ -55,6 +56,7 @@ function BottomTabNavigator({ enrolledCourses, setEnrolledCourses }) {
     >
       <Tab.Screen name="Home" children={() => <Home enrolledCourses={enrolledCourses} />} />
       <Tab.Screen name="Courses" children={() => <Courses enrolledCourses={enrolledCourses} setEnrolledCourses={setEnrolledCourses} />} />
+      <Tab.Screen name="Test" component={Test} />
       <Tab.Screen name="Profile" component={Profile} />
     </Tab.Navigator>
   );
@@ -71,7 +73,7 @@ function CustomNavigationBar({ email }) {
   const fetchUserData = async () => {
     try {
       if (email) {
-        const response = await axios.get(`http://localhost:4000/get-username/${email}`);
+        const response = await axios.get(`http://10.50.1.14:4000/get-username/${email}`);
         const userData = response.data;
         setUserName(userData.name);
         console.log(userData.name);
@@ -127,6 +129,7 @@ function AppStack({ route }) {
         <Stack.Screen name="Verification" component={Verification} />
         <Stack.Screen name="VideoPlayerScreen" component={VideoPlayerScreen} />
         <Stack.Screen name="CourseDetail" component={CourseDetails} />
+        <Stack.Screen name="Summary" component={Summary} />
       </Stack.Navigator>
     </View>
   );
