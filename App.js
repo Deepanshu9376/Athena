@@ -1,6 +1,6 @@
 import 'react-native-gesture-handler';
 import { Text } from 'react-native';
-import * as React from 'react';
+import  React, {useContext, useState,useEffect} from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -20,6 +20,8 @@ import VideoPlayerScreen from './InnerScreen/VideoPlayerScreen';
 import CourseDetails from './InnerScreen/CourseDetails';
 import Summary from './InnerScreen/Summary'
 import axios from 'react-native-axios';
+import { UserProvider } from './Context/authContext';
+import { UserContext } from './Context/authContext';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -63,29 +65,42 @@ function BottomTabNavigator({ enrolledCourses, setEnrolledCourses }) {
 }
 
 function CustomNavigationBar({ email }) {
+  const {user}=useContext(UserContext)
   const navigation = useNavigation();
   const [menuVisible, setMenuVisible] = React.useState(true);
-  const [userName, setUserName] = React.useState("");
+  const [userData, setUserData] = useState({ username: '' });
 
   const openMenu = () => setMenuVisible(true);
   const closeMenu = () => setMenuVisible(false);
 
-  const fetchUserData = async () => {
-    try {
-      if (email) {
-        const response = await axios.get(`http://10.50.1.14:4000/get-username/${email}`);
-        const userData = response.data;
-        setUserName(userData.name);
-        console.log(userData.name);
-      }
-    } catch (error) {
-      console.log('Error fetching user data:', error);
-    }
-  };
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        console.log('Attempting to fetch user data...');
+        const response = await fetch(`http://10.50.1.14:4000/get-username`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email: user.email }),
+        });
 
-  React.useEffect(() => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const result = await response.json();
+        console.log('Fetched user data:', result);
+
+        setUserData({ username: result.username });
+      } catch (error) {
+        setError(error.message);
+        // console.error('Error fetching user data:', error);
+      }
+    };
+
     fetchUserData();
-  }, [email]);
+  }, []);
 
   return (
     <View>
@@ -101,7 +116,7 @@ function CustomNavigationBar({ email }) {
             <Appbar.Action icon="dots-vertical" color="#fff" onPress={openMenu} />
           }
         >
-          {/* <Menu.Item onPress={() => {}} title={<Text>{userName}</Text>} /> */}
+          <Menu.Item onPress={() => {}} title={<Text>{userData.username || 'Loading...'}</Text>} />
           <Divider />
           <Menu.Item onPress={() => { navigation.navigate('Login') }} title={<Text>Logout</Text>} />
         </Menu>
@@ -138,6 +153,7 @@ function AppStack({ route }) {
 export default function App() {
   return (
     <PaperProvider>
+      <UserProvider>
       <NavigationContainer>
         <Stack.Navigator initialRouteName="Login" screenOptions={{ headerShown: false }}>
           <Stack.Screen name="Login" component={LoginScreen} />
@@ -146,6 +162,7 @@ export default function App() {
           <Stack.Screen name="AppStack" component={AppStack} />
         </Stack.Navigator>
       </NavigationContainer>
+     </UserProvider>
     </PaperProvider>
   );
 }

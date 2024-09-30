@@ -124,7 +124,7 @@ const Home = ({
           ]}
           onPress={() => handleButtonPress("ongoing")}
         >
-          <Text style={styles.buttonText}>Ongoing</Text>
+          <Text style={[styles.buttonText,selectedType === "ongoing" && styles.activeButtonText]}>Ongoing</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[
@@ -133,7 +133,7 @@ const Home = ({
           ]}
           onPress={() => handleButtonPress("completed")}
         >
-          <Text style={styles.buttonText}>Completed</Text>
+          <Text style={[styles.buttonText,selectedType === "completed" && styles.activeButtonText]}>Completed</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[
@@ -142,7 +142,7 @@ const Home = ({
           ]}
           onPress={() => handleButtonPress("expired")}
         >
-          <Text style={styles.buttonText}>Expired</Text>
+          <Text style={[styles.buttonText,selectedType === "expired" && styles.activeButtonText]}>Expired</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -272,8 +272,11 @@ const styles = StyleSheet.create({
   activeButton: {
     backgroundColor: "#0f4c75",
   },
+  activeButtonText:{
+    color: '#fff'
+  },
   buttonText: {
-    color: "#fff",
+    color: "#000",
   },
   courseCard: {
     padding: 20,
