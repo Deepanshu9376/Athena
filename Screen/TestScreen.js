@@ -13,56 +13,55 @@ const TestScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
   const { testName } = route.params;
-
   const [testData, setTestData] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [selectedOption, setSelectedOption] = useState(null);
   const [answers, setAnswers] = useState([]);
-  const [timer, setTimer] = useState(100); // 100 seconds timer for each question
+  const [timer, setTimer] = useState(15); 
   const [completed, setCompleted] = useState(false);
 
-  // Use the testData directly instead of "questions"
   const questionSet = testData?.sections || [];
 
   useEffect(() => {
-    setTimer(100); // Reset timer to 100 seconds when a new question is loaded
+    setTimer(15); 
   }, [currentQuestion]);
 
   useEffect(() => {
     const interval = setInterval(() => {
       setTimer((prevTimer) => {
         if (prevTimer === 1) {
-          handleNextQuestion(); // Move to next question after timer ends
-          return 100; // Reset timer for next question
+          handleNextQuestion(); 
+          return 15; 
         } else {
           return prevTimer - 1;
         }
       });
     }, 1000);
 
-    return () => clearInterval(interval); // Cleanup on unmount
+    return () => clearInterval(interval); 
   }, [currentQuestion]);
 
   const handleNextQuestion = () => {
     const updatedAnswers = [...answers];
-    updatedAnswers[currentQuestion] = selectedOption; // Store the answer
-    setAnswers(updatedAnswers);
-
-    if (currentQuestion < questionSet.length - 1) {
-      setCurrentQuestion(currentQuestion + 1);
-      setSelectedOption(null); // Reset selected option
+    updatedAnswers[currentQuestion] = selectedOption; 
+  
+    if (currentQuestion === questionSet.length - 1) {
+      setAnswers(updatedAnswers); 
+      setCompleted(true);
+      showResult(updatedAnswers); 
     } else {
-      setCompleted(true); // Mark test as completed
-      showResult();
+      setAnswers(updatedAnswers); 
+      setCurrentQuestion(currentQuestion + 1); 
+      setSelectedOption(null); 
     }
   };
-
+    
   const handlePrevQuestion = () => {
     if (currentQuestion > 0) {
       setCurrentQuestion(currentQuestion - 1);
-      setSelectedOption(answers[currentQuestion - 1]); // Restore previously selected answer
+      setSelectedOption(answers[currentQuestion - 1]); 
     }
   };
 
@@ -116,21 +115,26 @@ const TestScreen = () => {
     );
   }
 
-  const showResult = () => {
-    const attempted = answers.filter((answer) => answer !== null).length;
-    const correct = answers.filter(
-      (answer, idx) => answer === questionSet[idx].correct
+  const showResult = (updatedAnswers) => {
+    const attempted = updatedAnswers.filter((answer) => answer !== null).length; 
+    const correctQs = updatedAnswers.filter(
+      (answer, idx) => answer === testData.sections[idx].correct
     ).length;
-    const incorrect = attempted - correct;
-    const accuracy = (correct / questionSet.length) * 100;
-
+    const incorrect = attempted - correctQs; 
+    const accuracy = ((correctQs / questionSet.length) * 100) 
+    console.log(attempted);
+    console.log(correctQs);
+    console.log(incorrect);
+  
+    // Navigate to the result screen with the calculated result
     navigation.navigate("ResultScreen", {
       attempted,
-      correct,
+      correctQs,
       incorrect,
       accuracy,
     });
   };
+  
 
   if (completed || questionSet.length === 0) return null; // Hide content if test is completed or no questions
 
