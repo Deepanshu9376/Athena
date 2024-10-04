@@ -7,15 +7,6 @@ const VideoPlayerScreen = ({ route }) => {
 
   return (
     <View style={styles.container}>
-      {/* <WebView
-        source={{ uri: videoUrl }}
-        javaScriptEnabled={true}
-        originWhitelist={["*"]}
-        style={styles.webview}
-        onShouldStartLoadWithRequest={(request) => {
-          return true; // Always allow the webview to load the URL
-        }}
-      /> */}
         <WebView javaScriptEnabled={true} domStorageEnabled={true} source={{ uri: videoUrl }}/>
     </View>
   );
