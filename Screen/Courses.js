@@ -12,7 +12,7 @@ import { Colors } from "react-native/Libraries/NewAppScreen";
 import { useNavigation } from "@react-navigation/native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
-const Courses = ({ enrolledCourses, setEnrolledCourses }) => {
+const Courses = ({ enrolledCourses, setEnrolledCourses,wishlist,handleWishlist }) => {
   // Initialize availableCourses state
   const [availableCourses, setAvailableCourses] = useState([
     {
@@ -30,7 +30,7 @@ const Courses = ({ enrolledCourses, setEnrolledCourses }) => {
     {
       id: 3,
       name: "Azure",
-      duration: "6 weeks",
+      duration: "4 weeks",
       image: require("../assets/images/azure.jpg"),
     },
     {
@@ -66,7 +66,7 @@ const Courses = ({ enrolledCourses, setEnrolledCourses }) => {
     {
       id: 9,
       name: "MongoDB",
-      duration: "6 weeks",
+      duration: "4 weeks",
       image: require("../assets/images/mongoDb.png"),
     },
     {
@@ -134,19 +134,8 @@ const Courses = ({ enrolledCourses, setEnrolledCourses }) => {
     navigation.navigate("Summary", { courseName: course.name });
   };
   
-  const [wishlist,setWishList]=useState([]);
-  const navigataion=useNavigation();
-  const handleWishlist=(course)=>{
-    if(!wishlist.includes(course)){
-      setWishList([...wishlist,course]);
-      console.log('Added to wishlist');
-    }
-    else{
-      setWishList(wishlist.filter((item)=>item!=course));
-      console.log('Remove from Wishlist')
-    }
-  }
-
+  // const navigation=useNavigation();
+  
   const isInWishlist=(course)=>{
     return wishlist.includes(course);
   }
@@ -177,7 +166,6 @@ const Courses = ({ enrolledCourses, setEnrolledCourses }) => {
                       size={20}
                       style={{ backgroundColor: "#FFF" }}
                       iconColor={isInWishlist(item) ? "red" : "black"}
-                      // color={isInWishlist(item.name) ? "red" : "black"}
                       onPress={() => handleWishlist(item)}
                     />
                     <Button

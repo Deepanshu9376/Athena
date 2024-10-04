@@ -29,11 +29,12 @@ import { UserProvider } from "./Context/authContext";
 import { UserContext } from "./Context/authContext";
 import TestScreen from "./Screen/TestScreen";
 import ResultScreen from "./Screen/ResultScreen";
+import Favourite from "./Screen/Favourite";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
-function BottomTabNavigator({ enrolledCourses, setEnrolledCourses }) {
+function BottomTabNavigator({ enrolledCourses, setEnrolledCourses ,wishlist,handleWishlist}) {
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -73,6 +74,8 @@ function BottomTabNavigator({ enrolledCourses, setEnrolledCourses }) {
           <Courses
             enrolledCourses={enrolledCourses}
             setEnrolledCourses={setEnrolledCourses}
+            wishlist={wishlist}
+            handleWishlist={handleWishlist}
           />
         )}
       />
@@ -82,7 +85,7 @@ function BottomTabNavigator({ enrolledCourses, setEnrolledCourses }) {
   );
 }
 
-function CustomNavigationBar({ email }) {
+function CustomNavigationBar({ email,wishlist }) {
   const { user } = useContext(UserContext);
   const navigation = useNavigation();
   const [menuVisible, setMenuVisible] = React.useState(true);
@@ -148,14 +151,28 @@ function CustomNavigationBar({ email }) {
         >
           <Menu.Item
             onPress={() => {}}
-            title={<Text>{userData.username || "Loading..."}</Text>}
+            title={<View style={styles.menuItem}>
+            <Icon name="person" size={20} color="#000" />
+            <Text style={styles.menuText}>{userData.username || "Loading..."}</Text>
+          </View>}
           />
           <Divider />
+          <Menu.Item
+          onPress={() => navigation.navigate("Favourite", { wishlist })}
+          title={ <View style={styles.menuItem}>
+          <Icon name="heart" size={20} color="black" />
+          <Text style={styles.menuText}>Wishlist</Text>
+        </View>} 
+          />
+          <Divider/>
           <Menu.Item
             onPress={() => {
               navigation.navigate("Login");
             }}
-            title={<Text>Logout</Text>}
+            title={<View style={styles.menuItem}>
+            <Icon name="power" size={20} color="black" />
+            <Text style={styles.menuText}>Logout</Text>
+          </View>}
           />
         </Menu>
       </Appbar.Header>
@@ -166,10 +183,21 @@ function CustomNavigationBar({ email }) {
 function AppStack({ route }) {
   const { email } = route.params;
   const [enrolledCourses, setEnrolledCourses] = React.useState([]);
+  const [wishlist, setWishlist] = useState([]);
+
+  const handleWishlist = (course) => {
+    if (!wishlist.includes(course)) {
+      setWishlist([...wishlist, course]);
+      console.log("Added to wishlist");
+    } else {
+      setWishlist(wishlist.filter((item) => item != course));
+      console.log("Removed from wishlist");
+    }
+  };
 
   return (
     <View style={{ flex: 1 }}>
-      <CustomNavigationBar email={email} />
+      <CustomNavigationBar email={email} wishlist={wishlist}/>
       <Stack.Navigator
         initialRouteName="Success"
         screenOptions={{ headerShown: false }}
@@ -179,6 +207,8 @@ function AppStack({ route }) {
             <BottomTabNavigator
               enrolledCourses={enrolledCourses}
               setEnrolledCourses={setEnrolledCourses}
+              wishlist={wishlist} 
+              handleWishlist={handleWishlist}
             />
           )}
         </Stack.Screen>
@@ -188,6 +218,7 @@ function AppStack({ route }) {
         <Stack.Screen name="Summary" component={Summary} />
         <Stack.Screen name="TestScreen" component={TestScreen} />
         <Stack.Screen name="ResultScreen" component={ResultScreen} />
+        <Stack.Screen name="Favourite" component={Favourite}/>
       </Stack.Navigator>
     </View>
   );
@@ -214,6 +245,14 @@ export default function App() {
 }
 
 const styles = StyleSheet.create({
+  menuItem: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  menuText: {
+    marginLeft: 10, // space between icon and text
+    fontSize: 16,
+  },
   appbarHeader: {
     backgroundColor: "#0f4c75",
     marginTop: StatusBar.currentHeight ? 2 : 0,
