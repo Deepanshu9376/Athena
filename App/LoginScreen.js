@@ -17,6 +17,7 @@ import { useNavigation } from "@react-navigation/native";
 import athena from "../assets/images/Athen_Logo.png";
 import axios from 'react-native-axios';
 import { UserContext } from '../Context/authContext';  // Import the UserContext
+import {BASE_URL} from '@env';
 
 export default function LoginScreen() {
   const navigation = useNavigation();
@@ -36,7 +37,7 @@ export default function LoginScreen() {
 
     try {
       console.log(fdata);
-      const response = await axios.post("http://10.50.1.14:4000/signin", fdata);
+      const response = await axios.post(`${BASE_URL}:4000/signin`, fdata);
       if (response.data.token) {
         // Update the context with the user's email
         setUser({ email: fdata.email });

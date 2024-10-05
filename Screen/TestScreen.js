@@ -8,6 +8,7 @@ import {
 } from "react-native";
 import { RadioButton } from "react-native-paper";
 import { useNavigation, useRoute } from "@react-navigation/native";
+import {BASE_URL} from '@env';
 
 const TestScreen = () => {
   const navigation = useNavigation();
@@ -68,7 +69,7 @@ const TestScreen = () => {
   useEffect(() => {
     const fetchTestDetails = async () => {
       try {
-        const response = await fetch("http://10.50.1.14:4000/testName", {
+        const response = await fetch(`${BASE_URL}:4000/testName`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

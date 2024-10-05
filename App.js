@@ -30,6 +30,7 @@ import { UserContext } from "./Context/authContext";
 import TestScreen from "./Screen/TestScreen";
 import ResultScreen from "./Screen/ResultScreen";
 import Favourite from "./Screen/Favourite";
+import {BASE_URL} from '@env';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -61,7 +62,11 @@ function BottomTabNavigator({ enrolledCourses, setEnrolledCourses ,wishlist,hand
         },
         tabBarActiveTintColor: "#fff",
         tabBarInactiveTintColor: "#bbbbbb",
-        tabBarStyle: { backgroundColor: "#0f4c75" },
+        tabBarStyle: { 
+          backgroundColor: "#0f4c75",  
+          bottom: 8.5,   
+          height: 50, 
+        },
       })}
     >
       <Tab.Screen
@@ -98,7 +103,7 @@ function CustomNavigationBar({ email,wishlist }) {
     const fetchUserData = async () => {
       try {
         console.log("Attempting to fetch user data...");
-        const response = await fetch(`http://10.50.1.14:4000/get-username`, {
+        const response = await fetch(`${BASE_URL}:4000/get-username`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

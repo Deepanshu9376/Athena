@@ -5,6 +5,7 @@ import { useNavigation, useRoute } from '@react-navigation/native'; // for navig
 import playIcon from '../assets/images/courses/play.png'; // Import play icon
 import { useSelector } from 'react-redux';
 import { ScrollView } from 'react-native-gesture-handler';
+import {BASE_URL} from '@env'
 
 const CourseDetails = () => {
   const [courseData, setCourseData] = useState(null); // Store fetched data
@@ -19,7 +20,7 @@ const CourseDetails = () => {
     // Fetch course details from the API
     const fetchCourseDetails = async () => {
       try {
-        const response = await fetch('http://10.50.1.14:4000/courseName', {
+        const response = await fetch(`${BASE_URL}:4000/courseName`, {
           method: 'POST', // Use POST method
           headers: {
             'Content-Type': 'application/json',

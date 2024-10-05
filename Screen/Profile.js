@@ -4,6 +4,7 @@ import { ScrollView } from 'react-native-gesture-handler';
 import { Avatar, Card } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { UserContext } from '../Context/authContext';
+import {BASE_URL} from '@env';
 
 const Profile = () => {
   const {user}=useContext(UserContext)
@@ -15,7 +16,7 @@ const Profile = () => {
     const fetchUserData = async () => {
       try {
         console.log('Attempting to fetch user data...');
-        const response = await fetch(`http://10.50.1.14:4000/get-username`, {
+        const response = await fetch(`${BASE_URL}:4000/get-username`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
