@@ -11,7 +11,7 @@ import {
   Keyboard,
   ScrollView,
 } from "react-native";
-import axios from "react-native-axios";
+import {BASE_URL} from '@env';
 
 export default function SignupScreen({ navigation }) {
   const [fdata, setFdata] = useState({
@@ -41,7 +41,7 @@ export default function SignupScreen({ navigation }) {
     try {
       console.log(fdata);
       // const response = await axios.post('http://10.50.0.142:3000/verify', fdata);
-      fetch("http://10.50.1.14:4000/verify", {
+      fetch(`${BASE_URL}:4000/verify`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

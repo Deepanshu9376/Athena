@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import {
   View,
   Text,
@@ -16,9 +16,12 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import athena from "../assets/images/Athen_Logo.png";
 import axios from 'react-native-axios';
+import { UserContext } from '../Context/authContext';  // Import the UserContext
+import {BASE_URL} from '@env';
 
 export default function LoginScreen() {
   const navigation = useNavigation();
+  const { setUser } = useContext(UserContext);  // Use context to set the user email
   const [fdata, setFdata] = useState({
     email: "",
     password: "",
@@ -26,29 +29,29 @@ export default function LoginScreen() {
 
   const [errormsg, setErrormsg] = useState(null);
 
-  const handleLogin = async() => {
-    // console.log(fdata);
-    if (fdata.email == "" || fdata.password == "") {
+  const handleLogin = async () => {
+    if (fdata.email === "" || fdata.password === "") {
       setErrormsg("All fields are required");
       return;
     }
-      try {
-        console.log(fdata);
-        const response = await axios.post("http://10.50.1.14:4000/signin", fdata);
-        // console.log('Full Response:', response);
-        if (response.data.token) {
-          // Store the email from fdata as it's not in the response
-          // await AsyncStorage.setItem("userEmail", fdata.email);
-          // Optionally, store the token too    
-          navigation.navigate('AppStack', { email: fdata.email });
-        } else {
-          setErrormsg('Invalid login response');
-        }
-      } catch (error) {
-        setErrormsg('Error connecting to the server');
-      }
 
+    try {
+      console.log(fdata);
+      const response = await axios.post(`${BASE_URL}:4000/signin`, fdata);
+      if (response.data.token) {
+        // Update the context with the user's email
+        setUser({ email: fdata.email });
+
+        // Navigate to the AppStack and pass the email as well
+        navigation.navigate('AppStack', { email: fdata.email });
+      } else {
+        setErrormsg('Invalid login response');
+      }
+    } catch (error) {
+      setErrormsg('Error connecting to the server');
+    }
   };
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -63,39 +66,33 @@ export default function LoginScreen() {
             <Text style={styles.emailtext}>Email</Text>
             <TextInput
               style={styles.input}
-              value={fdata.email}  // Set email value from state
-              onChangeText={(text) => setFdata({ ...fdata, email: text })} 
+              value={fdata.email}
+              onChangeText={(text) => setFdata({ ...fdata, email: text })}
               placeholder="Enter Email"
               keyboardType="email-address"
               autoCapitalize="none"
             />
-            {errormsg ? (
-              <Text style={styles.errorText}>{errormsg}</Text>
-            ) : null}
+            {errormsg ? <Text style={styles.errorText}>{errormsg}</Text> : null}
           </View>
           <View>
             <Text style={styles.emailtext}>Password</Text>
             <TextInput
               style={styles.input}
-              onChangeText={(text)=>setFdata({...fdata,password: text})}
+              onChangeText={(text) => setFdata({ ...fdata, password: text })}
               placeholder="Enter Password"
               secureTextEntry
             />
-            {errormsg ? (
-              <Text style={styles.errorText}>{errormsg}</Text>
-            ) : null}
+            {errormsg ? <Text style={styles.errorText}>{errormsg}</Text> : null}
           </View>
           <View style={styles.forgot}>
             <TouchableOpacity>
-              <Text style={styles.forgottext} onPress={()=>navigation.navigate("Signup")}>Forgot Password?</Text>
+              <Text style={styles.forgottext} onPress={() => navigation.navigate("Signup")}>
+                Forgot Password?
+              </Text>
             </TouchableOpacity>
           </View>
           <View style={styles.signin}>
-            <Button
-              title="Sign in"
-              color="#0f4c75"
-              onPress={handleLogin}
-            ></Button>
+            <Button title="Sign in" color="#0f4c75" onPress={handleLogin}></Button>
           </View>
           <View style={styles.logingem}>
             <Button
@@ -116,7 +113,7 @@ const styles = StyleSheet.create({
   },
   inner: {
     flex: 1,
-    alignItems:'center',
+    alignItems: "center",
     padding: 24,
   },
   image: {
@@ -134,8 +131,9 @@ const styles = StyleSheet.create({
     alignItems: "flex-start",
     borderRadius: 10,
   },
-  errorInput: {
-    borderColor: "red",
+  errorText: {
+    color: "red",
+    fontSize: 12,
   },
   emailtext: {
     color: "#000",
@@ -159,9 +157,5 @@ const styles = StyleSheet.create({
     color: "green",
     marginTop: 30,
     width: 250,
-  },
-  errorText: {
-    color: "red",
-    fontSize: 12,
   },
 });

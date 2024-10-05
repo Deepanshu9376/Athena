@@ -1,18 +1,54 @@
-import React from 'react';
+import React , {useState,useEffect, useContext} from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { Avatar, Card } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { UserContext } from '../Context/authContext';
+import {BASE_URL} from '@env';
 
 const Profile = () => {
+  const {user}=useContext(UserContext)
+  const [userData, setUserData] = useState({ username: '' });
+  const [error, setError] = useState(null);
+
+  // Fetch username from API
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        console.log('Attempting to fetch user data...');
+        const response = await fetch(`${BASE_URL}:4000/get-username`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email: user.email }),
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const result = await response.json();
+        console.log('Fetched user data:', result);
+
+        setUserData({ username: result.username });
+      } catch (error) {
+        setError(error.message);
+        // console.error('Error fetching user data:', error);
+      }
+    };
+
+    fetchUserData();
+  }, []);
+
   return (
     <ScrollView style={styles.container}>
       <Card style={[styles.card, styles.profileCard]}>
         <View style={styles.profileInfo}>
-          <Avatar.Text size={60} label="DT" style={styles.avatar} />
+          <Avatar.Text size={60} label={userData.username ? userData.username[0] : "DT"} style={styles.avatar} />
           <View style={styles.profileText}>
-            <Text style={styles.cardTitle}>Deepanshu Thakur</Text>
-            <Text style={styles.cardEmail}>deepanshu@example.com</Text>
+            <Text style={styles.cardTitle}>{userData.username || 'Loading...'}</Text>
+            <Text style={styles.cardEmail}>{user.email}</Text>
             <Text style={styles.cardContact}>+91 12345 67890</Text>
           </View>
         </View>

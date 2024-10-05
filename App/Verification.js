@@ -14,6 +14,7 @@ import {
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import athena from "../assets/images/Athen_Logo.png";
+import {BASE_URL} from '@env';
 
 // import { bwmessage, errormessage, formgroup, head1, head2, input, label, link, link2 } from '../common/formcss'
 
@@ -43,7 +44,7 @@ const Verification = ({ navigation, route }) => {
         name: userdata[0]?.name,
       };
 
-      fetch("http://10.50.1.14:4000/signup", {
+      fetch(`${BASE_URL}:4000/signup`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

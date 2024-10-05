@@ -56,7 +56,6 @@ const Home = ({
       .toString()
       .padStart(2, "0")}M`;
   };
-  
 
   const getCoursesByType = () => {
     if (selectedType === "ongoing") {
@@ -77,7 +76,12 @@ const Home = ({
         <View style={[styles.card, styles.totalCourses]}>
           <Text style={styles.cardTitle}>Total Number of Courses:</Text>
           <Text style={styles.cardNumber}>12</Text>
-          <Icon name="list-outline" size={30} color="#fff" style={styles.icon} />
+          <Icon
+            name="list-outline"
+            size={30}
+            color="#fff"
+            style={styles.icon}
+          />
         </View>
         <View style={[styles.card, styles.ongoingCourses]}>
           <Text style={styles.cardTitle}>Ongoing Courses:</Text>
@@ -102,7 +106,12 @@ const Home = ({
         <View style={[styles.card, styles.totalTrainingTime]}>
           <Text style={styles.cardTitle}>Total Training Time:</Text>
           <Text style={styles.cardNumber}>{calculateTrainingTime()}</Text>
-          <Icon name="time-outline" size={30} color="#fff" style={styles.icon} />
+          <Icon
+            name="time-outline"
+            size={30}
+            color="#fff"
+            style={styles.icon}
+          />
         </View>
       </View>
 
@@ -115,7 +124,7 @@ const Home = ({
           ]}
           onPress={() => handleButtonPress("ongoing")}
         >
-          <Text style={styles.buttonText}>Ongoing</Text>
+          <Text style={[styles.buttonText,selectedType === "ongoing" && styles.activeButtonText]}>Ongoing</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[
@@ -124,7 +133,7 @@ const Home = ({
           ]}
           onPress={() => handleButtonPress("completed")}
         >
-          <Text style={styles.buttonText}>Completed</Text>
+          <Text style={[styles.buttonText,selectedType === "completed" && styles.activeButtonText]}>Completed</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[
@@ -133,7 +142,7 @@ const Home = ({
           ]}
           onPress={() => handleButtonPress("expired")}
         >
-          <Text style={styles.buttonText}>Expired</Text>
+          <Text style={[styles.buttonText,selectedType === "expired" && styles.activeButtonText]}>Expired</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -141,16 +150,17 @@ const Home = ({
 
   return (
     <Provider>
-    <FlatList
-      data={coursesToDisplay}
-      keyExtractor={(item, index) =>
-        item.id ? item.id.toString() : index.toString()
-      }
-      ListHeaderComponent={renderHeader}
-      renderItem={({ item }) => (
-        <TouchableOpacity onPress={() => handleCoursePress(item)}>
+      <FlatList
+        data={coursesToDisplay}
+        keyExtractor={(item, index) =>
+          item.id ? item.id.toString() : index.toString()
+        }
+        ListHeaderComponent={renderHeader}
+        renderItem={({ item }) => (
           <View style={styles.courseCard}>
-            <Image source={item.image} style={styles.courseImage} />
+            <TouchableOpacity onPress={() => handleCoursePress(item)}>
+              <Image source={item.image} style={styles.courseImage} />
+            </TouchableOpacity>
             <View style={styles.courseInfo}>
               <View>
                 <Text style={styles.courseTitle}>{item.name}</Text>
@@ -190,11 +200,10 @@ const Home = ({
               />
             </Menu>
           </View>
-        </TouchableOpacity>
-      )}
-      contentContainerStyle={styles.contentContainer}
-    />
-  </Provider>
+        )}
+        contentContainerStyle={styles.contentContainer}
+      />
+    </Provider>
   );
 };
 
@@ -212,21 +221,21 @@ const styles = StyleSheet.create({
     paddingBottom: 100,
   },
   card: {
-    width: '100%',
+    width: "100%",
     borderRadius: 10,
     padding: 20,
     marginVertical: 10,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    shadowColor: '#000',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.8,
     shadowRadius: 2,
     elevation: 5,
   },
   totalCourses: {
-    backgroundColor: '#007aff',
+    backgroundColor: "#007aff",
   },
   completedCourses: {
     backgroundColor: "#000",
@@ -263,8 +272,11 @@ const styles = StyleSheet.create({
   activeButton: {
     backgroundColor: "#0f4c75",
   },
+  activeButtonText:{
+    color: '#fff'
+  },
   buttonText: {
-    color: "#fff",
+    color: "#000",
   },
   courseCard: {
     padding: 20,
